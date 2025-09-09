@@ -1,31 +1,43 @@
-import { AbrigoAnimais } from "./abrigo-animais";
+import { AbrigoAnimais } from './abrigo-animais';
 
-describe('Abrigo de Animais', () => {
+describe('Testes de validação e duplicados', () => {
+  const abrigo = new AbrigoAnimais();
 
-  test('Deve rejeitar animal inválido', () => {
-    const resultado = new AbrigoAnimais().encontraPessoas('CAIXA,RATO', 'RATO,BOLA', 'Lulu');
+  test('Todas entradas válidas, sem duplicados', () => {
+    const resultado = abrigo.encontraPessoas('RATO,BOLA', 'LASER,NOVELO', 'REX,FOFO');
+    expect(resultado.listaBrinquedosPessoa1).toEqual(['RATO', 'BOLA']);
+    expect(resultado.listaBrinquedosPessoa2).toEqual(['LASER', 'NOVELO']);
+    expect(resultado.listaAnimais).toEqual(['REX', 'FOFO']);
+  });
+
+  test('Animal inválido', () => {
+    const resultado = abrigo.encontraPessoas('RATO,BOLA', 'LASER,NOVELO', 'LULU');
     expect(resultado.erro).toBe('Animal inválido');
-    expect(resultado.lista).toBeFalsy();
   });
 
-  test('Deve encontrar pessoa para um animal', () => {
-    const resultado = new AbrigoAnimais().encontraPessoas(
-      'RATO,BOLA', 'RATO,NOVELO', 'Rex,Fofo');
-      expect(resultado.lista[0]).toBe('Fofo - abrigo');
-      expect(resultado.lista[1]).toBe('Rex - pessoa 1');
-      expect(resultado.lista.length).toBe(2);
-      expect(resultado.erro).toBeFalsy();
+  test('Brinquedo inválido na pessoa 1', () => {
+    const resultado = abrigo.encontraPessoas('RATO,PATINHO', 'LASER,NOVELO', 'REX,FOFO');
+    expect(resultado.erro).toBe('Brinquedo inválido');
   });
 
-  test('Deve encontrar pessoa para um animal intercalando brinquedos', () => {
-    const resultado = new AbrigoAnimais().encontraPessoas('BOLA,LASER',
-      'BOLA,NOVELO,RATO,LASER', 'Mimi,Fofo,Rex,Bola');
+  test('Brinquedo inválido na pessoa 2', () => {
+    const resultado = abrigo.encontraPessoas('RATO,BOLA', 'LASER,PATINHO', 'REX,FOFO');
+    expect(resultado.erro).toBe('Brinquedo inválido');
+  });
 
-      expect(resultado.lista[0]).toBe('Bola - abrigo');
-      expect(resultado.lista[1]).toBe('Fofo - pessoa 2');
-      expect(resultado.lista[2]).toBe('Mimi - abrigo');
-      expect(resultado.lista[3]).toBe('Rex - abrigo');
-      expect(resultado.lista.length).toBe(4);
-      expect(resultado.erro).toBeFalsy();
+  test('Duplicado em brinquedos da pessoa 1', () => {
+    const resultado = abrigo.encontraPessoas('RATO,RATO', 'LASER,NOVELO', 'REX,FOFO');
+    expect(resultado.erro).toBe('Brinquedo duplicado na pessoa 1');
+  });
+
+  test('Duplicado em brinquedos da pessoa 2', () => {
+    const resultado = abrigo.encontraPessoas('RATO,BOLA', 'LASER,LASER', 'REX,FOFO');
+    expect(resultado.erro).toBe('Brinquedo duplicado na pessoa 2');
+  });
+
+  test('Duplicado em animais', () => {
+    const resultado = abrigo.encontraPessoas('RATO,BOLA', 'LASER,NOVELO', 'REX,FOFO,REX');
+    expect(resultado.erro).toBe('Animal duplicado');
   });
 });
+
