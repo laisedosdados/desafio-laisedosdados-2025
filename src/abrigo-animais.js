@@ -38,16 +38,43 @@ class AbrigoAnimais {
     if (temDuplicado(b2)) return { erro: "Brinquedo duplicado na pessoa 2" };
     if (temDuplicado(animais)) return { erro: "Animal duplicado" };
 
-    // Retorna as listas processadas (teste visual)
+    // ORDENS CORRETAS DE BRINQUEDOS
+    const ordensCorretas = [
+      ["RATO", "BOLA"],
+      ["BOLA", "LASER"],
+      ["BOLA", "RATO", "LASER"],
+      ["RATO", "BOLA"],
+      ["CAIXA", "NOVELO"],
+      ["LASER", "RATO", "BOLA"],
+      ["SKATE", "RATO"]
+    ];
+
+    // Função que verifica se os brinquedos seguem alguma ordem correta
+    const podeAdotar = (ordensCorretas, chuteUsuario) => {
+      for (const ordem of ordensCorretas) {
+        let indice = 0;
+        for (const brinquedo of chuteUsuario) {
+          if (brinquedo === ordem[indice]) {
+            indice++;
+          }
+          if (indice === ordem.length) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    // Verificando para cada pessoa
+    const pessoa1Pode = podeAdotar(ordensCorretas, b1);
+    const pessoa2Pode = podeAdotar(ordensCorretas, b2);
     return {
-      listaBrinquedosPessoa1: b1,
-      listaBrinquedosPessoa2: b2,
-      listaAnimais: animais
+      pessoa1Pode,
+      pessoa2Pode
     };
   }
 }
 
-// Export correto para Jest
-export { AbrigoAnimais as AbrigoAnimais };
-
+// Export para Jest
+export { AbrigoAnimais };
 
