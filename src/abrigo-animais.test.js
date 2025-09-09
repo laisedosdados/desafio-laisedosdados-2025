@@ -1,50 +1,71 @@
-// arquivo: src/abrigo-animais.test.js
-import { AbrigoAnimais } from './abrigo-animais';
+import { AbrigoAnimais } from './abrigo-animais.js';
 
-describe('Testes de ordem correta de brinquedos', () => {
+describe('Testes do Abrigo de Animais', () => {
   const abrigo = new AbrigoAnimais();
 
-  test('Pessoa 1 segue ordem correta, pessoa 2 não', () => {
+  test('Quando os dois podem adotar, animais vão para o abrigo', () => {
     const resultado = abrigo.encontraPessoas(
-      'RATO,BOLA',  // Pessoa 1
-      'BOLA,RATO',  // Pessoa 2
-      'REX,FOFO'    // Animais
+      'RATO,BOLA',
+      'RATO,BOLA',
+      'REX'
     );
-
-    expect(resultado.pessoa1Pode).toBe(true);
-    expect(resultado.pessoa2Pode).toBe(false);
+    expect(resultado).toEqual({
+      lista: ['REX - abrigo']
+    });
   });
 
-  test('Ambas pessoas seguem ordem correta', () => {
+  test('Animal inválido deve retornar erro', () => {
     const resultado = abrigo.encontraPessoas(
-      'BOLA,LASER', // Pessoa 1
-      'RATO,BOLA',  // Pessoa 2
-      'ZERO,LOCO'
+      'RATO,BOLA',
+      'RATO,BOLA',
+      'DRACO'
     );
-
-    expect(resultado.pessoa1Pode).toBe(true);
-    expect(resultado.pessoa2Pode).toBe(true);
+    expect(resultado).toEqual({
+      erro: 'Animal inválido'
+    });
   });
 
-  test('Nenhuma pessoa segue ordem correta', () => {
+  test('Brinquedo inválido deve retornar erro', () => {
     const resultado = abrigo.encontraPessoas(
-      'LASER,RATO', // Pessoa 1
-      'CAIXA,SKATE',// Pessoa 2
-      'MIMI,LOCO'
+      'RATO,PELUCIA',
+      'RATO,BOLA',
+      'REX'
     );
-
-    expect(resultado.pessoa1Pode).toBe(false);
-    expect(resultado.pessoa2Pode).toBe(false);
+    expect(resultado).toEqual({
+      erro: 'Brinquedo inválido'
+    });
   });
 
-  test('Ordem intercalada ainda válida', () => {
+  test('Pessoa 1 adota, pessoa 2 não pode, animais vão para pessoa 1 ou abrigo', () => {
     const resultado = abrigo.encontraPessoas(
-      'RATO,SKATE,BOLA', // Pessoa 1
-      'CAIXA,NOVELO',    // Pessoa 2
-      'FOFO,BEBE'
+      'LASER,RATO,BOLA',
+      'RATO,BOLA',
+      'REX,BEBE'
     );
+    expect(resultado).toEqual({
+      lista: ['BEBE - pessoa 1', 'REX - abrigo']
+    });
+  });
 
-    expect(resultado.pessoa1Pode).toBe(true);  // RATO e BOLA estão na ordem correta mesmo intercalando SKATE
-    expect(resultado.pessoa2Pode).toBe(true);
+  test('Pessoa 2 adota, pessoa 1 não pode', () => {
+    const resultado = abrigo.encontraPessoas(
+      'RATO,BOLA',
+      'LASER,RATO,BOLA',
+      'REX,BEBE'
+    );
+    expect(resultado).toEqual({
+      lista: ['BEBE - pessoa 2', 'REX - abrigo']
+    });
+  });
+
+  test('Nenhum pode adotar, todos vão para abrigo', () => {
+    const resultado = abrigo.encontraPessoas(
+      'RATO,BOLA',
+      'LASER',
+      'MIMI'
+    );
+    expect(resultado).toEqual({
+      lista: ['MIMI - abrigo']
+    });
   });
 });
